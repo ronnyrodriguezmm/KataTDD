@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +21,15 @@ class TddApplicationTests {
 	private static final String GOD_LIST_ROMAN = "https://my-json-server.typicode.com/jabrena/latency-problems/roman";
 	private static final String GOD_LIST_NORDIC = "https://my-json-server.typicode.com/jabrena/latency-problems/nordic";
 
-	private List<String> fixedGodList = new ArrayList<>();
-	private List<String> dummyGodList = new ArrayList<>();
+	private static List<String> fixedGodList = new ArrayList<>();
+	private static List<String> dummyGodList = new ArrayList<>();
 
 
-	private List<String> apiList = new ArrayList<>();
+	private static List<String> apiList = new ArrayList<>();
 	private ApiClientService apiClientService;
 
 	@BeforeAll
-	void contextLoads() {
+	static void  contextLoads() {
 		apiList.add(GOD_LIST_GREEK);
 		apiList.add(GOD_LIST_ROMAN);
 		apiList.add(GOD_LIST_NORDIC);
@@ -54,16 +55,16 @@ class TddApplicationTests {
 	@DisplayName("Test God name conversion")
 	@Test
 	public void TestConversionToDecimal(){
-		Long conversion = apiClientService.convertGodName("Zeus");
-		assertEquals(122101117115L, conversion);
+		BigDecimal conversion = apiClientService.convertGodName("Zeus");
+		assertTrue( conversion.compareTo(new BigDecimal(122101117115L))==0);
 	}
 
 	@Order(3)
-	@DisplayName("Test God name conversion")
+	@DisplayName("Test God sum")
 	@Test
 	public void TestGodSum(){
-		Long sum = apiClientService.sumGodList(dummyGodList);
-		assertEquals(3 * 122101117115L, sum);
+		BigDecimal sum = apiClientService.sumGodList(dummyGodList);
+		assertTrue( sum.compareTo(new BigDecimal(3*122101117115L))==0);
 	}
 
 	@Order(4)
@@ -71,9 +72,9 @@ class TddApplicationTests {
 	@Test
 	public void testHappyPath()
 	{
-		Long sum = apiClientService.processApi(apiList);
+		BigDecimal sum = apiClientService.processApi(apiList);
 		assertNotNull(sum);
-		assertEquals(true, sum>0);
+		assertEquals(true, sum.compareTo(BigDecimal.ZERO)>0);
 	}
 
 	@Order(5)
@@ -82,9 +83,9 @@ class TddApplicationTests {
 	public void testTimeOut()
 	{
 		int timeOut = 1000;
-		Long sum = apiClientService.processApi(apiList, timeOut);
+		BigDecimal sum = apiClientService.processApi(apiList, timeOut);
 		assertNotNull(sum);
-		assertEquals(true, sum>0);
+		assertEquals(true, sum.compareTo(BigDecimal.ZERO)>0);
 	}
 
 	@Autowired
